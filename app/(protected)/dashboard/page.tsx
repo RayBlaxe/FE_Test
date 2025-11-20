@@ -47,16 +47,6 @@ function totalAll(row: Lalin) {
   return row.Tunai + etoll(row) + ktp(row) + row.eFlo;
 }
 
-function formatDateShort(iso: string) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  return `${day}/${month}`;
-}
-
-
 const COLORS = ['#1d3a8d', '#ffcc03', '#2596be', '#22c55e', '#a855f7', '#f97316', '#0ea5e9'];
 
 export default function DashboardPage() {
@@ -242,6 +232,15 @@ export default function DashboardPage() {
     }));
   }, [filteredLalins, getCabangLabel]);
 
+  // Calculate totals
+  const totalLalinByPayment = useMemo(() => {
+    return paymentChartData.reduce((sum, item) => sum + item.value, 0);
+  }, [paymentChartData]);
+
+  const totalLalinByGate = useMemo(() => {
+    return gateChartData.reduce((sum, item) => sum + item.value, 0);
+  }, [gateChartData]);
+
   return (
     <AppShell title="Dashboard">
       {/* Filter bar */}
@@ -305,110 +304,268 @@ export default function DashboardPage() {
         </Typography>
       )}
 
-      {/* Grafik 1 */}
-      <Box mb={4}>
-        <Typography variant="subtitle1" mb={1}>
-          Jumlah Lalin per Metode Pembayaran ({tanggal && formatDateShort(tanggal)})
-        </Typography>
-        <Box sx={{ height: 280, bgcolor: '#f3f5f7', borderRadius: 1, p: 2 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={paymentChartData}>
-              <XAxis dataKey="method" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" name="Jumlah Lalin">
-                {paymentChartData.map((entry, index) => (
-                  <Cell key={entry.method} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Box>
+      {/* Charts Container */}
+      {filteredLalins.length > 0 && (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {/* Row 1: Payment Bar Chart + Shift Pie Chart */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+            gap: 4,
+          }}
+        >
+          {/* Bar Chart 1 - Payment Methods */}
+          <Box>
+            <Typography variant="h6" mb={1} fontWeight={600}>
+              Jumlah Lalin per Metode Pembayaran
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: '#f8fafc',
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                minHeight: 380,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ height: 300, flexGrow: 1 }}>
+                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                  <BarChart data={paymentChartData} layout="vertical">
+                    <XAxis type="number" />
+                    <YAxis dataKey="method" type="category" width={80} />
+                    <Tooltip
+                      formatter={(value: number) => value.toLocaleString('id-ID')}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 4,
+                      }}
+                    />
+                    <Bar dataKey="value" name="Jumlah Lalin" radius={[0, 4, 4, 0]}>
+                      {paymentChartData.map((entry, index) => (
+                        <Cell key={entry.method} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+              <Box
+                sx={{
+                  mt: 2,
+                  pt: 2,
+                  borderTop: '1px solid #e2e8f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Total Lalin (Semua Metode)
+                </Typography>
+                <Typography variant="h6" color="primary" fontWeight={600}>
+                  {totalLalinByPayment.toLocaleString('id-ID')}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
-      {/* Grafik 2 */}
-      <Box mb={4}>
-        <Typography variant="subtitle1" mb={1}>
-          Jumlah Lalin per Gerbang ({tanggal && formatDateShort(tanggal)})
-        </Typography>
-        <Box sx={{ height: 280, bgcolor: '#f3f5f7', borderRadius: 1, p: 2 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={gateChartData}>
-              <XAxis dataKey="gerbang" tick={{ fontSize: 10 }} interval={0} />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" name="Jumlah Lalin">
-                {gateChartData.map((entry, index) => (
-                  <Cell key={entry.gerbang} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Box>
-
-      {/* Grafik 3 & 4 */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          gap: 3,
-        }}
-      >
-        {/* Pie Shift */}
-        <Box>
-          <Typography variant="subtitle1" mb={1}>
-            Komposisi Lalin per Shift
-          </Typography>
-          <Box sx={{ height: 260, bgcolor: '#f3f5f7', borderRadius: 1, p: 2 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={shiftPieData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={90}
-                  label
-                >
-                  {shiftPieData.map((entry, index) => (
-                    <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* Pie Chart 1 - Shift */}
+          <Box>
+            <Typography variant="h6" mb={1} fontWeight={600}>
+              Komposisi Lalin per Shift
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: '#f8fafc',
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                minHeight: 380,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ height: 330, flexGrow: 1 }}>
+                <ResponsiveContainer width="100%" height="100%" minHeight={330}>
+                  <PieChart>
+                    <Pie
+                      data={shiftPieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      label={({ name, percent }) =>
+                        `${name}: ${((percent || 0) * 100).toFixed(1)}%`
+                      }
+                    >
+                      {shiftPieData.map((entry, index) => (
+                        <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => value.toLocaleString('id-ID')}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 4,
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      formatter={(value, entry: any) => (
+                        <span style={{ color: '#475569', fontSize: 13 }}>
+                          {value}: {(entry?.payload?.value || 0).toLocaleString('id-ID')}
+                        </span>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </Box>
           </Box>
         </Box>
 
-        {/* Pie Chart Ruas */}
-        <Box>
-          <Typography variant="subtitle1" mb={1}>
-            Komposisi Lalin per Ruas/Cabang
-          </Typography>
-          <Box sx={{ height: 260, bgcolor: '#f3f5f7', borderRadius: 1, p: 2 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={cabangPieData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={90}
-                  label
-                >
-                  {cabangPieData.map((entry, index) => (
-                    <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+        {/* Row 2: Gates Bar Chart + Cabang Pie Chart */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+            gap: 4,
+          }}
+        >
+          {/* Bar Chart 2 - Gates */}
+          <Box>
+            <Typography variant="h6" mb={1} fontWeight={600}>
+              Jumlah Lalin per Gerbang
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: '#f8fafc',
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                minHeight: 380,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ height: 300, flexGrow: 1 }}>
+                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                  <BarChart data={gateChartData} layout="vertical">
+                    <XAxis type="number" />
+                    <YAxis dataKey="gerbang" type="category" width={100} tick={{ fontSize: 11 }} />
+                    <Tooltip
+                      formatter={(value: number) => value.toLocaleString('id-ID')}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 4,
+                      }}
+                    />
+                    <Bar dataKey="value" name="Jumlah Lalin" radius={[0, 4, 4, 0]}>
+                      {gateChartData.map((entry, index) => (
+                        <Cell key={entry.gerbang} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+              <Box
+                sx={{
+                  mt: 2,
+                  pt: 2,
+                  borderTop: '1px solid #e2e8f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Total Lalin (Semua Gerbang)
+                </Typography>
+                <Typography variant="h6" color="primary" fontWeight={600}>
+                  {totalLalinByGate.toLocaleString('id-ID')}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Pie Chart 2 - Cabang/Ruas */}
+          <Box>
+            <Typography variant="h6" mb={1} fontWeight={600}>
+              Komposisi Lalin per Ruas/Cabang
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: '#f8fafc',
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                minHeight: 380,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ height: 330, flexGrow: 1 }}>
+                <ResponsiveContainer width="100%" height="100%" minHeight={330}>
+                  <PieChart>
+                    <Pie
+                      data={cabangPieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      label={({ name, percent }) =>
+                        `${name}: ${((percent || 0) * 100).toFixed(1)}%`
+                      }
+                    >
+                      {cabangPieData.map((entry, index) => (
+                        <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => value.toLocaleString('id-ID')}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 4,
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      formatter={(value, entry: any) => (
+                        <span style={{ color: '#475569', fontSize: 13 }}>
+                          {value}: {(entry?.payload?.value || 0).toLocaleString('id-ID')}
+                        </span>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </Box>
           </Box>
         </Box>
       </Box>
+      )}
+
+      {/* No Data Message */}
+      {filteredLalins.length === 0 && !loading && (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Tidak ada data
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Silakan pilih tanggal atau gunakan filter untuk melihat data.
+          </Typography>
+        </Box>
+      )}
     </AppShell>
   );
 }

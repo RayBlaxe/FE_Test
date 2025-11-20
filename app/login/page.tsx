@@ -9,15 +9,22 @@ import {
   Container,
   TextField,
   Typography,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { apiFetch } from '@/lib/http';
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -174,11 +181,25 @@ export default function LoginPage() {
                 </Typography>
                 <TextField
                   fullWidth
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   size="medium"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                          sx={{ color: '#64748b' }}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
