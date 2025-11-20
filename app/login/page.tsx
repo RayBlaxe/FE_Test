@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       // Check if login failed
       if (data?.status === false) {
-        // Handle validation errors (422)
+        // Handle (422)
         if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
           const errorMessages = data.errors
             .map((err: Record<string, string>) => {
@@ -65,10 +65,9 @@ export default function LoginPage() {
       localStorage.setItem('token', token);
       router.replace('/dashboard');
     } catch (err) {
-      // Ensure we display a clean error message
+      // error message
       const errorMessage = (err as Error)?.message || 'Login gagal';
       
-      // Check if error message looks like JSON (shouldn't happen, but just in case)
       if (errorMessage.startsWith('{') || errorMessage.startsWith('[')) {
         setError('Login gagal. Silakan periksa username dan password Anda.');
       } else {

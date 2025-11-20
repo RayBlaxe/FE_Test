@@ -151,7 +151,7 @@ export default function ReportsPage() {
     })();
   }, []);
 
-  // default date for daily report
+  
   useEffect(() => {
     setTanggal('2023-11-01');
   }, []);
@@ -166,7 +166,7 @@ export default function ReportsPage() {
     setLoading(true);
     setPage(1);
     try {
-      // Fetch data for specific date
+    
       const res = await apiFetch(`/lalins?tanggal=${encodeURIComponent(tanggal)}&limit=1000`);
       
       const items: Lalin[] = res?.data?.rows?.rows || [];
@@ -191,19 +191,19 @@ export default function ReportsPage() {
     setPage(1);
   }
 
-  // Helper to get gerbang name
+
   const getGerbangName = useCallback((idCabang: number, idGerbang: number): string => {
     const gerbang = gerbangs.find(g => g.IdCabang === idCabang && g.id === idGerbang);
     return gerbang?.NamaGerbang || `Gerbang ${idGerbang}`;
   }, [gerbangs]);
 
-  // Helper to get cabang name
+ 
   const getCabangName = useCallback((idCabang: number): string => {
     const gerbang = gerbangs.find(g => g.IdCabang === idCabang);
     return gerbang?.NamaCabang || `Ruas ${idCabang}`;
   }, [gerbangs]);
 
-  // Get day of week from date
+ 
   const getDayName = useCallback((dateString: string): string => {
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const date = new Date(dateString);
@@ -220,13 +220,11 @@ export default function ReportsPage() {
   const filteredData = useMemo(() => {
     let rows = data;
     
-    // Filter by selected tab (payment method)
     rows = rows.filter((row) => {
       const value = metricValue(row, tab);
       return value > 0; // Only show rows with data for selected payment method
     });
     
-    // Filter by search
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       rows = rows.filter((row) => {

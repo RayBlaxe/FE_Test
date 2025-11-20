@@ -61,7 +61,7 @@ export default function DashboardPage() {
   useEffect(() => {
     (async () => {
       try {
-        // Fetch all gerbangs with large limit
+        // Fetch all gerbangs
         const res = await apiFetch('/gerbangs?limit=1000');
         const items: Gerbang[] = res?.data?.rows?.rows || [];
         setGerbangs(items);
@@ -71,7 +71,7 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  // No default date - fetch all dates
+  // fetch all dates
   useEffect(() => {
     setTanggal('');
   }, []);
@@ -81,8 +81,7 @@ export default function DashboardPage() {
     setError('');
     setLoading(true);
     try {
-      // Fetch all data with large limit to get all records
-      // If no date specified, fetch all
+      // Fetch data with large limit
       const url = tanggal 
         ? `/lalins?tanggal=${encodeURIComponent(tanggal)}&limit=1000`
         : `/lalins?limit=1000`;
@@ -307,7 +306,7 @@ export default function DashboardPage() {
       {/* Charts Container */}
       {filteredLalins.length > 0 && (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {/* Row 1: Payment Bar Chart + Shift Pie Chart */}
+        {/* Row 1 */}
         <Box
           sx={{
             display: 'grid',
@@ -315,7 +314,7 @@ export default function DashboardPage() {
             gap: 4,
           }}
         >
-          {/* Bar Chart 1 - Payment Methods */}
+          {/* Bar Chart 1 */}
           <Box>
             <Typography variant="h6" mb={1} fontWeight={600}>
               Jumlah Lalin per Metode Pembayaran
@@ -372,7 +371,7 @@ export default function DashboardPage() {
             </Box>
           </Box>
 
-          {/* Pie Chart 1 - Shift */}
+          {/* Pie Chart 1 */}
           <Box>
             <Typography variant="h6" mb={1} fontWeight={600}>
               Komposisi Lalin per Shift
@@ -430,7 +429,7 @@ export default function DashboardPage() {
           </Box>
         </Box>
 
-        {/* Row 2: Gates Bar Chart + Cabang Pie Chart */}
+        {/* Row 2 */}
         <Box
           sx={{
             display: 'grid',
@@ -438,7 +437,7 @@ export default function DashboardPage() {
             gap: 4,
           }}
         >
-          {/* Bar Chart 2 - Gates */}
+          {/* Bar Chart 2 */}
           <Box>
             <Typography variant="h6" mb={1} fontWeight={600}>
               Jumlah Lalin per Gerbang
@@ -495,7 +494,7 @@ export default function DashboardPage() {
             </Box>
           </Box>
 
-          {/* Pie Chart 2 - Cabang/Ruas */}
+          {/* Pie Chart 2 */}
           <Box>
             <Typography variant="h6" mb={1} fontWeight={600}>
               Komposisi Lalin per Ruas/Cabang
