@@ -1,10 +1,8 @@
-Based on best practices for professional README files, here's a simplified, reorganized version that's more natural and less AI-like:
-
 ***
 
-# Traffic JM
+# Traffic Jasa Marga
 
-A web application for monitoring and managing toll gate traffic data for PT Jasa Marga (Persero) Tbk.[1][2]
+A web application for monitoring and managing toll gate traffic data for PT Jasa Marga (Persero) Tbk.
 
 ## Tech Stack
 
@@ -27,11 +25,10 @@ Secure login/logout with token-based authentication and automatic session manage
 - Date filtering and search functionality
 
 ### Daily Traffic Report
-View and filter daily traffic reports with breakdown by payment method (Cash, E-Toll, Flo, KTP). Export data to CSV format.[5][6]
+View and filter daily traffic reports with breakdown by payment method (Cash, E-Toll, Flo, KTP). Export data to CSV format.
 
 ### Master Data Management
-Complete CRUD operations for toll gate data with search and pagination support.[4][7]
-
+Complete CRUD operations for toll gate data with search and pagination support.
 ## Prerequisites
 
 - Node.js 18.x or higher
@@ -75,16 +72,10 @@ bun run build
 bun start
 ```
 
-## Support
-
-For API issues, contact:
-- Yuli Nurhayati – 0822 9828 6125
-- Denis Juliansyah – 0858 6343 3346
-- Risma Faoziya – 0882 9803 2514
 
 ## License
 
-Developed for PT Jasa Marga (Persero) Tbk technical test.[8][9]
+Developed for PT Jasa Marga (Persero) Tbk technical test.
 
 ***
 
