@@ -3,12 +3,14 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#2596be',
-      dark: '#1e7a9e',
-      light: '#4ab0d3',
+      main: '#1d3a8d',
+      dark: '#14296b',
+      light: '#5270b8',
     },
     secondary: {
-      main: '#64748b',
+      main: '#ffcc03',
+      dark: '#e6b803',
+      light: '#ffd633',
     },
     background: {
       default: '#f8fafb',
@@ -62,10 +64,10 @@ export const theme = createTheme({
               borderColor: '#e2e8f0',
             },
             '&:hover fieldset': {
-              borderColor: '#2596be',
+              borderColor: '#1d3a8d',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#2596be',
+              borderColor: '#1d3a8d',
               borderWidth: 2,
             },
           },

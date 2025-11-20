@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   Box,
   Button,
-  Container,
   IconButton,
   TextField,
   Typography,
@@ -58,7 +57,7 @@ function formatDateShort(iso: string) {
 }
 
 // ===== Warna untuk grafik =====
-const COLORS = ['#3b82f6', '#f97316', '#22c55e', '#a855f7', '#eab308', '#ef4444', '#0ea5e9'];
+const COLORS = ['#1d3a8d', '#ffcc03', '#2596be', '#22c55e', '#a855f7', '#f97316', '#0ea5e9'];
 
 export default function DashboardPage() {
   const [tanggal, setTanggal] = useState('');
@@ -83,12 +82,11 @@ export default function DashboardPage() {
 
   // default tanggal hari ini
   useEffect(() => {
-    const today = new Date();
-    const iso = today.toISOString().slice(0, 10);
-    setTanggal(iso);
+    setTanggal('2023-11-01');
   }, []);
 
-  async function handleFilter() {
+  // Auto-fetch data when date is set
+  const handleFilter = useCallback(async () => {
     if (!tanggal) {
       setError('Tanggal harus diisi.');
       return;
@@ -105,7 +103,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [tanggal]);
+
+  useEffect(() => {
+    if (tanggal) {
+      handleFilter();
+    }
+  }, [tanggal, handleFilter]);
 
   function handleReset() {
     setSearch('');
@@ -241,67 +245,65 @@ export default function DashboardPage() {
   return (
     <AppShell title="Dashboard">
       {/* Filter bar */}
-      <Container disableGutters sx={{ mb: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 2,
-            mb: 2,
-            alignItems: 'center',
-          }}
-        >
-          {/* Search all */}
-          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 260 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search (ruas, gerbang, shift...)"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <IconButton size="small" sx={{ mr: 1 }}>
-                    <SearchIcon fontSize="small" />
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-
-          {/* Date filter */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TextField
-              label="Tanggal"
-              type="date"
-              size="small"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-
-          {/* Buttons */}
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button variant="contained" onClick={handleFilter} disabled={loading}>
-              {loading ? 'Loading...' : 'Filter'}
-            </Button>
-            <Button variant="outlined" onClick={handleReset}>
-              Reset
-            </Button>
-          </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 2,
+          mb: 2,
+          alignItems: 'center',
+        }}
+      >
+        {/* Search all */}
+        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 260 }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search (ruas, gerbang, shift...)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <IconButton size="small" sx={{ mr: 1 }}>
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              ),
+            }}
+          />
         </Box>
-        {error && (
-          <Typography color="error" variant="body2" mb={1}>
-            {error}
-          </Typography>
-        )}
-        {!!filteredLalins.length && (
-          <Typography variant="body2" color="text.secondary">
-            Total baris data: {filteredLalins.length.toLocaleString('id-ID')}
-          </Typography>
-        )}
-      </Container>
+
+        {/* Date filter */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TextField
+            label="Tanggal"
+            type="date"
+            size="small"
+            value={tanggal}
+            onChange={(e) => setTanggal(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
+
+        {/* Buttons */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="contained" onClick={handleFilter} disabled={loading}>
+            {loading ? 'Loading...' : 'Filter'}
+          </Button>
+          <Button variant="outlined" onClick={handleReset}>
+            Reset
+          </Button>
+        </Box>
+      </Box>
+      {error && (
+        <Typography color="error" variant="body2" mb={2}>
+          {error}
+        </Typography>
+      )}
+      {!!filteredLalins.length && (
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Total baris data: {filteredLalins.length.toLocaleString('id-ID')}
+        </Typography>
+      )}
 
       {/* Grafik 1 */}
       <Box mb={4}>

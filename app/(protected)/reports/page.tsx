@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   Box,
   Button,
-  Container,
   IconButton,
   MenuItem,
   Select,
@@ -139,12 +138,11 @@ export default function ReportsPage() {
 
   // today default
   useEffect(() => {
-    const today = new Date();
-    const iso = today.toISOString().slice(0, 10);
-    setTanggal(iso);
+    setTanggal('2023-11-01');
   }, []);
 
-  async function handleFilter() {
+  // Auto-fetch data when date is set
+  const handleFilter = useCallback(async () => {
     if (!tanggal) {
       setError('Tanggal harus diisi.');
       return;
@@ -163,7 +161,13 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [tanggal]);
+
+  useEffect(() => {
+    if (tanggal) {
+      handleFilter();
+    }
+  }, [tanggal, handleFilter]);
 
   function handleReset() {
     setSearch('');
@@ -240,72 +244,70 @@ export default function ReportsPage() {
   }
 
   return (
-    <AppShell title="Laporan Lalin Per Hari">
+    <AppShell title="Laporan Lalu Lintas Per Hari">
       {/* Filter bar */}
-      <Container disableGutters sx={{ mb: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 2,
-            mb: 2,
-            alignItems: 'center',
-          }}
-        >
-          {/* Search */}
-          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 260 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search (ruas, gerbang, gardu, shift...)"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <IconButton size="small" sx={{ mr: 1 }}>
-                    <SearchIcon fontSize="small" />
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-
-          {/* Date */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TextField
-              label="Tanggal"
-              type="date"
-              size="small"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-
-          {/* Buttons */}
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button variant="contained" onClick={handleFilter} disabled={loading}>
-              {loading ? 'Loading...' : 'Filter'}
-            </Button>
-            <Button variant="outlined" onClick={handleReset}>
-              Reset
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<GetAppIcon />}
-              onClick={handleExport}
-              disabled={!filteredData.length}
-            >
-              Export
-            </Button>
-          </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 2,
+          mb: 2,
+          alignItems: 'center',
+        }}
+      >
+        {/* Search */}
+        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 260 }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search (ruas, gerbang, gardu, shift...)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <IconButton size="small" sx={{ mr: 1 }}>
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              ),
+            }}
+          />
         </Box>
-        {error && (
-          <Typography color="error" variant="body2" mb={1}>
-            {error}
-          </Typography>
-        )}
-      </Container>
+
+        {/* Date */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TextField
+            label="Tanggal"
+            type="date"
+            size="small"
+            value={tanggal}
+            onChange={(e) => setTanggal(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
+
+        {/* Buttons */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="contained" onClick={handleFilter} disabled={loading}>
+            {loading ? 'Loading...' : 'Filter'}
+          </Button>
+          <Button variant="outlined" onClick={handleReset}>
+            Reset
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<GetAppIcon />}
+            onClick={handleExport}
+            disabled={!filteredData.length}
+          >
+            Export
+          </Button>
+        </Box>
+      </Box>
+      {error && (
+        <Typography color="error" variant="body2" mb={2}>
+          {error}
+        </Typography>
+      )}
 
       {/* Tabs metric */}
       <Box

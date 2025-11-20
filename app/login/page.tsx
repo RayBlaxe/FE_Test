@@ -45,8 +45,39 @@ export default function LoginPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f8fafb', display: 'flex', alignItems: 'center' }}>
-      <Container maxWidth="lg">
+    <Box 
+      sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center',
+        backgroundImage: 'url(/gedungjm.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          filter: 'grayscale(100%)',
+          zIndex: 0,
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1,
+        }
+      }}
+    >
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
         <Box sx={{ 
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
@@ -100,10 +131,10 @@ export default function LoginPage() {
                       borderRadius: 2,
                       bgcolor: '#fefefe',
                       '&:hover fieldset': {
-                        borderColor: '#2596be',
+                        borderColor: '#1d3a8d',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#2596be',
+                        borderColor: '#1d3a8d',
                       },
                     },
                   }}
@@ -125,10 +156,10 @@ export default function LoginPage() {
                       borderRadius: 2,
                       bgcolor: '#fefefe',
                       '&:hover fieldset': {
-                        borderColor: '#2596be',
+                        borderColor: '#1d3a8d',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#2596be',
+                        borderColor: '#1d3a8d',
                       },
                     },
                   }}
@@ -156,13 +187,13 @@ export default function LoginPage() {
                 disabled={loading}
                 sx={{
                   py: 1.5,
-                  bgcolor: '#2596be',
+                  bgcolor: '#1d3a8d',
                   borderRadius: 2,
                   textTransform: 'none',
                   fontSize: '1rem',
                   fontWeight: 600,
                   '&:hover': {
-                    bgcolor: '#1e7a9e',
+                    bgcolor: '#14296b',
                   },
                 }}
               >
@@ -175,18 +206,43 @@ export default function LoginPage() {
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
-              backgroundImage: 'linear-gradient(135deg, #2596be 0%, #1e7a9e 100%)',
+              backgroundImage: 'url(/tol1.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
               p: 4,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(29, 58, 141, 0.85)',
+                filter: 'grayscale(100%)',
+                zIndex: 0,
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(29, 58, 141, 0.7)',
+                mixBlendMode: 'multiply',
+                zIndex: 1,
+              }
             }}
           >
             <Box
               sx={{
                 textAlign: 'center',
                 color: '#fefefe',
-                zIndex: 1,
+                zIndex: 2,
+                position: 'relative',
               }}
             >
               <Typography variant="h3" fontWeight={700} gutterBottom>
@@ -195,8 +251,8 @@ export default function LoginPage() {
               <Typography variant="h6" sx={{ opacity: 0.9 }}>
                 Monitoring & Management System
               </Typography>
-              <Box sx={{ mt: 4 }}>
-                <Typography variant="body1" sx={{ opacity: 0.8 }}>
+              <Box sx={{ mt: 4, px: 3, py: 2, bgcolor: 'rgba(255, 204, 3, 0.15)', borderRadius: 2, border: '2px solid rgba(255, 204, 3, 0.7)' }}>
+                <Typography variant="body1" sx={{ color: '#ffcc03', fontWeight: 600 }}>
                   Efficient toll gate traffic data management
                 </Typography>
               </Box>

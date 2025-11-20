@@ -50,8 +50,8 @@ export function AppShell({ title, children }: AppShellProps) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            bgcolor: '#fefefe',
-            borderRight: '1px solid #e2e8f0',
+            bgcolor: '#1d3a8d',
+            borderRight: 'none',
           },
         }}
       >
@@ -63,14 +63,15 @@ export function AppShell({ title, children }: AppShellProps) {
             alignItems: 'center',
             justifyContent: 'center',
             px: 3,
+            bgcolor: '#fefefe',
             borderBottom: '1px solid #e2e8f0',
           }}
         >
           <Image
             src="/jasamarga-logo.png"
             alt="Jasa Marga Logo"
-            width={180}
-            height={48}
+            width={60}
+            height={16}
             style={{ objectFit: 'contain' }}
             priority
           />
@@ -85,18 +86,22 @@ export function AppShell({ title, children }: AppShellProps) {
             sx={{
               borderRadius: 2,
               mb: 0.5,
+              color: 'rgba(255, 255, 255, 0.7)',
               '&.Mui-selected': {
-                bgcolor: '#2596be',
-                color: '#fff',
+                bgcolor: '#fefefe',
+                color: '#1d3a8d',
                 '&:hover': {
-                  bgcolor: '#1e7a9e',
+                  bgcolor: '#f1f5f9',
                 },
                 '& .MuiListItemIcon-root': {
-                  color: '#fff',
+                  color: '#1d3a8d',
                 },
               },
               '&:hover': {
-                bgcolor: '#f1f5f9',
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
+              '& .MuiListItemIcon-root': {
+                color: 'rgba(255, 255, 255, 0.7)',
               },
             }}
           >
@@ -107,7 +112,7 @@ export function AppShell({ title, children }: AppShellProps) {
               primary="Dashboard" 
               primaryTypographyProps={{ 
                 fontSize: '0.9rem',
-                fontWeight: isActive('/dashboard') ? 600 : 400 
+                fontWeight: isActive('/dashboard') ? 600 : 500 
               }} 
             />
           </ListItemButton>
@@ -119,18 +124,22 @@ export function AppShell({ title, children }: AppShellProps) {
             sx={{
               borderRadius: 2,
               mb: 0.5,
+              color: 'rgba(255, 255, 255, 0.7)',
               '&.Mui-selected': {
-                bgcolor: '#2596be',
-                color: '#fff',
+                bgcolor: '#fefefe',
+                color: '#1d3a8d',
                 '&:hover': {
-                  bgcolor: '#1e7a9e',
+                  bgcolor: '#f1f5f9',
                 },
                 '& .MuiListItemIcon-root': {
-                  color: '#fff',
+                  color: '#1d3a8d',
                 },
               },
               '&:hover': {
-                bgcolor: '#f1f5f9',
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
+              '& .MuiListItemIcon-root': {
+                color: 'rgba(255, 255, 255, 0.7)',
               },
             }}
           >
@@ -141,7 +150,7 @@ export function AppShell({ title, children }: AppShellProps) {
               primary="Laporan Lalin" 
               primaryTypographyProps={{ 
                 fontSize: '0.9rem',
-                fontWeight: isActive('/reports') ? 600 : 400 
+                fontWeight: isActive('/reports') ? 600 : 500 
               }} 
             />
           </ListItemButton>
@@ -153,18 +162,22 @@ export function AppShell({ title, children }: AppShellProps) {
             sx={{
               borderRadius: 2,
               mb: 0.5,
+              color: 'rgba(255, 255, 255, 0.7)',
               '&.Mui-selected': {
-                bgcolor: '#2596be',
-                color: '#fff',
+                bgcolor: '#fefefe',
+                color: '#1d3a8d',
                 '&:hover': {
-                  bgcolor: '#1e7a9e',
+                  bgcolor: '#f1f5f9',
                 },
                 '& .MuiListItemIcon-root': {
-                  color: '#fff',
+                  color: '#1d3a8d',
                 },
               },
               '&:hover': {
-                bgcolor: '#f1f5f9',
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
+              '& .MuiListItemIcon-root': {
+                color: 'rgba(255, 255, 255, 0.7)',
               },
             }}
           >
@@ -175,19 +188,19 @@ export function AppShell({ title, children }: AppShellProps) {
               primary="Master Gerbang" 
               primaryTypographyProps={{ 
                 fontSize: '0.9rem',
-                fontWeight: isActive('/master-gate') ? 600 : 400 
+                fontWeight: isActive('/master-gate') ? 600 : 500 
               }} 
             />
           </ListItemButton>
 
-          <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid #e2e8f0' }}>
+          <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
             <ListItemButton
               onClick={handleLogout}
               sx={{
                 borderRadius: 2,
                 color: '#ef4444',
                 '&:hover': {
-                  bgcolor: '#fee2e2',
+                  bgcolor: 'rgba(239, 68, 68, 0.1)',
                 },
               }}
             >
@@ -217,6 +230,7 @@ export function AppShell({ title, children }: AppShellProps) {
           <Toolbar
             sx={{
               minHeight: 72,
+              height: 72,
               display: 'flex',
               justifyContent: 'space-between',
               px: 3,
@@ -230,7 +244,7 @@ export function AppShell({ title, children }: AppShellProps) {
                 sx={{ 
                   width: 36, 
                   height: 36, 
-                  bgcolor: '#2596be',
+                  bgcolor: '#1d3a8d',
                   fontSize: '0.9rem'
                 }}
               >
@@ -246,6 +260,7 @@ export function AppShell({ title, children }: AppShellProps) {
           sx={{
             flex: 1,
             p: 3,
+            bgcolor: '#fefefe',
           }}
         >
           <Box
