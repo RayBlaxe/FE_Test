@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +27,7 @@ import { apiFetch } from "@/lib/http";
 import type { Gerbang } from "@/types/gerbang";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function MasterGatePage() {
   const [data, setData] = useState<Gerbang[]>([]);
@@ -38,6 +41,9 @@ export default function MasterGatePage() {
     NamaCabang: "",
   });
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
  async function fetchGerbangs() {
   try {
@@ -141,6 +147,38 @@ useEffect(() => {
     }
   }
 
+  // Filter data based on search
+  const filteredData = useMemo(() => {
+    if (!search.trim()) return data;
+    const q = search.trim().toLowerCase();
+    return data.filter((row) => {
+      const text = [
+        String(row.id),
+        String(row.IdCabang),
+        row.NamaGerbang,
+        row.NamaCabang,
+      ]
+        .join(' ')
+        .toLowerCase();
+      return text.includes(q);
+    });
+  }, [data, search]);
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / rowsPerPage));
+  const currentPage = Math.min(page, totalPages);
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, rowsPerPage]);
+
+  function changePage(newPage: number) {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+  }
+
   return (
     <AppShell title="Master Data Gerbang">
       <Container sx={{ py: 4 }}>
@@ -158,6 +196,28 @@ useEffect(() => {
           </Button>
         </Box>
 
+        {/* Search Bar */}
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search by ID, Nama Gerbang, or Nama Cabang..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1); // Reset to first page when searching
+            }}
+            InputProps={{
+              startAdornment: (
+                <IconButton size="small" sx={{ mr: 1 }}>
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              ),
+            }}
+            sx={{ maxWidth: 600 }}
+          />
+        </Box>
+
         {loading && <Typography>Memuat data...</Typography>}
         {error && (
           <Typography color="error" mb={2}>
@@ -168,8 +228,8 @@ useEffect(() => {
         {!loading && (
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell>ID Gerbang</TableCell>
+              <TableRow sx={{ bgcolor: '#f3f5f7' }}>
+                <TableCell>No</TableCell>
                 <TableCell>ID Cabang</TableCell>
                 <TableCell>Nama Gerbang</TableCell>
                 <TableCell>Nama Cabang</TableCell>
@@ -177,9 +237,9 @@ useEffect(() => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row) => (
+              {paginatedData.map((row, index) => (
                 <TableRow key={`${row.IdCabang}-${row.id}`}>
-                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{row.IdCabang}</TableCell>
                   <TableCell>{row.NamaGerbang}</TableCell>
                   <TableCell>{row.NamaCabang}</TableCell>
@@ -200,13 +260,85 @@ useEffect(() => {
                   </TableCell>
                 </TableRow>
               ))}
-              {data.length === 0 && !loading && (
+              {filteredData.length === 0 && !loading && (
                 <TableRow>
-                  <TableCell colSpan={5}>Tidak ada data gerbang.</TableCell>
+                  <TableCell colSpan={5} align="center">
+                    {search ? 'Tidak ada data yang sesuai dengan pencarian.' : 'Tidak ada data gerbang.'}
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
+        )}
+
+        {/* Pagination Controls */}
+        {!loading && filteredData.length > 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mt: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2">Rows per page:</Typography>
+              <Select
+                size="small"
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setPage(1);
+                }}
+                sx={{ height: 32 }}
+              >
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+              </Select>
+              <Typography variant="body2" sx={{ ml: 2 }}>
+                Showing {(currentPage - 1) * rowsPerPage + 1} - {Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                disabled={currentPage <= 1}
+                onClick={() => changePage(1)}
+                size="small"
+              >
+                First
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={currentPage <= 1}
+                onClick={() => changePage(currentPage - 1)}
+                size="small"
+              >
+                Prev
+              </Button>
+              <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', px: 2 }}>
+                Page {currentPage} of {totalPages}
+              </Typography>
+              <Button
+                variant="outlined"
+                disabled={currentPage >= totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                size="small"
+              >
+                Next
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={currentPage >= totalPages}
+                onClick={() => changePage(totalPages)}
+                size="small"
+              >
+                Last
+              </Button>
+            </Box>
+          </Box>
         )}
 
         <Dialog

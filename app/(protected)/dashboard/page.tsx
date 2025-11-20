@@ -71,7 +71,8 @@ export default function DashboardPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiFetch('/gerbangs');
+        // Fetch all gerbangs with large limit
+        const res = await apiFetch('/gerbangs?limit=1000');
         const items: Gerbang[] = res?.data?.rows?.rows || [];
         setGerbangs(items);
       } catch (err) {
@@ -80,21 +81,22 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  
+  // No default date - fetch all dates
   useEffect(() => {
-    setTanggal('2023-11-01');
+    setTanggal('');
   }, []);
 
   // Auto-fetch 
   const handleFilter = useCallback(async () => {
-    if (!tanggal) {
-      setError('Tanggal harus diisi.');
-      return;
-    }
     setError('');
     setLoading(true);
     try {
-      const res = await apiFetch(`/lalins?tanggal=${encodeURIComponent(tanggal)}`);
+      // Fetch all data with large limit to get all records
+      // If no date specified, fetch all
+      const url = tanggal 
+        ? `/lalins?tanggal=${encodeURIComponent(tanggal)}&limit=1000`
+        : `/lalins?limit=1000`;
+      const res = await apiFetch(url);
       const items: Lalin[] = res?.data?.rows?.rows || [];
       setLalins(items);
     } catch (err) {
@@ -106,10 +108,8 @@ export default function DashboardPage() {
   }, [tanggal]);
 
   useEffect(() => {
-    if (tanggal) {
-      handleFilter();
-    }
-  }, [tanggal, handleFilter]);
+    handleFilter();
+  }, [handleFilter]);
 
   function handleReset() {
     setSearch('');

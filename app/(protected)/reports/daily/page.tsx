@@ -31,12 +31,12 @@ type TabKey =
   | 'combo';
 
 const TAB_LABELS: { key: TabKey; label: string }[] = [
-  { key: 'tunai', label: 'Tunai' },
-  { key: 'etoll', label: 'E-Toll' },
-  { key: 'flo', label: 'Flo' },
-  { key: 'ktp', label: 'KTP' },
-  { key: 'all', label: 'Keseluruhan' },
-  { key: 'combo', label: 'E-Toll+Tunai+Flo' },
+  { key: 'tunai', label: 'Total Tunai' },
+  { key: 'etoll', label: 'Total E-Toll' },
+  { key: 'flo', label: 'Total Flo' },
+  { key: 'ktp', label: 'Total KTP' },
+  { key: 'all', label: 'Total Keseluruhan' },
+  { key: 'combo', label: 'Total E-Toll+Tunai+Flo' },
 ];
 
 // helper 
@@ -151,23 +151,23 @@ export default function ReportsPage() {
     })();
   }, []);
 
-  // today default - changed to empty to fetch all dates
+  // default date for daily report
   useEffect(() => {
-    setTanggal('');
+    setTanggal('2023-11-01');
   }, []);
 
   // Auto-fetch data 
   const handleFilter = useCallback(async () => {
+    if (!tanggal) {
+      setError('Tanggal harus diisi.');
+      return;
+    }
     setError('');
     setLoading(true);
     setPage(1);
     try {
-      // Fetch all data by requesting a large limit
-      // If no date specified, fetch all
-      const url = tanggal 
-        ? `/lalins?tanggal=${encodeURIComponent(tanggal)}&limit=1000`
-        : `/lalins?limit=1000`;
-      const res = await apiFetch(url);
+      // Fetch data for specific date
+      const res = await apiFetch(`/lalins?tanggal=${encodeURIComponent(tanggal)}&limit=1000`);
       
       const items: Lalin[] = res?.data?.rows?.rows || [];
       setData(items);
@@ -180,8 +180,10 @@ export default function ReportsPage() {
   }, [tanggal]);
 
   useEffect(() => {
-    handleFilter();
-  }, [handleFilter]);
+    if (tanggal) {
+      handleFilter();
+    }
+  }, [tanggal, handleFilter]);
 
   function handleReset() {
     setSearch('');

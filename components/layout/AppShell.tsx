@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useState } from 'react';
 import {
   Box,
   Drawer,
@@ -14,12 +15,15 @@ import {
   Typography,
   AppBar,
   Avatar,
+  Collapse,
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 const drawerWidth = 260;
 
@@ -31,6 +35,9 @@ type AppShellProps = {
 export function AppShell({ title, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [laporanOpen, setLaporanOpen] = useState(
+    pathname.startsWith('/reports')
+  );
 
   const isActive = (href: string) => pathname === href;
 
@@ -118,23 +125,11 @@ export function AppShell({ title, children }: AppShellProps) {
           </ListItemButton>
 
           <ListItemButton
-            component={Link}
-            href="/reports"
-            selected={isActive('/reports')}
+            onClick={() => setLaporanOpen(!laporanOpen)}
             sx={{
               borderRadius: 2,
               mb: 0.5,
               color: 'rgba(255, 255, 255, 0.7)',
-              '&.Mui-selected': {
-                bgcolor: '#fefefe',
-                color: '#1d3a8d',
-                '&:hover': {
-                  bgcolor: '#f1f5f9',
-                },
-                '& .MuiListItemIcon-root': {
-                  color: '#1d3a8d',
-                },
-              },
               '&:hover': {
                 bgcolor: 'rgba(255, 255, 255, 0.1)',
               },
@@ -150,10 +145,81 @@ export function AppShell({ title, children }: AppShellProps) {
               primary="Laporan Lalin" 
               primaryTypographyProps={{ 
                 fontSize: '0.9rem',
-                fontWeight: isActive('/reports') ? 600 : 500 
+                fontWeight: 500 
               }} 
             />
+            {laporanOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
+
+          {/* Submenu for Laporan Lalin */}
+          <Collapse in={laporanOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton
+                component={Link}
+                href="/reports"
+                selected={isActive('/reports')}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  pl: 6,
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  '&.Mui-selected': {
+                    bgcolor: '#fefefe',
+                    color: '#1d3a8d',
+                    '&:hover': {
+                      bgcolor: '#f1f5f9',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: '#1d3a8d',
+                    },
+                  },
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                <ListItemText 
+                  primary="Semua Tanggal" 
+                  primaryTypographyProps={{ 
+                    fontSize: '0.85rem',
+                    fontWeight: isActive('/reports') ? 600 : 500 
+                  }} 
+                />
+              </ListItemButton>
+              <ListItemButton
+                component={Link}
+                href="/reports/daily"
+                selected={isActive('/reports/daily')}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  pl: 6,
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  '&.Mui-selected': {
+                    bgcolor: '#fefefe',
+                    color: '#1d3a8d',
+                    '&:hover': {
+                      bgcolor: '#f1f5f9',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: '#1d3a8d',
+                    },
+                  },
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                <ListItemText 
+                  primary="Per Hari" 
+                  primaryTypographyProps={{ 
+                    fontSize: '0.85rem',
+                    fontWeight: isActive('/reports/daily') ? 600 : 500 
+                  }} 
+                />
+              </ListItemButton>
+            </List>
+          </Collapse>
 
           <ListItemButton
             component={Link}
