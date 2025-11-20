@@ -31,12 +31,12 @@ type TabKey =
   | 'combo';
 
 const TAB_LABELS: { key: TabKey; label: string }[] = [
-  { key: 'tunai', label: 'Total Tunai' },
-  { key: 'etoll', label: 'Total E-Toll' },
-  { key: 'flo', label: 'Total Flo' },
-  { key: 'ktp', label: 'Total KTP' },
-  { key: 'all', label: 'Total Keseluruhan' },
-  { key: 'combo', label: 'Total E-Toll+Tunai+Flo' },
+  { key: 'tunai', label: 'Tunai' },
+  { key: 'etoll', label: 'E-Toll' },
+  { key: 'flo', label: 'Flo' },
+  { key: 'ktp', label: 'KTP' },
+  { key: 'all', label: 'Keseluruhan' },
+  { key: 'combo', label: 'E-Toll+Tunai+Flo' },
 ];
 
 // helper 
@@ -357,6 +357,11 @@ export default function ReportsPage() {
           {error}
         </Typography>
       )}
+
+      {/* Payment method label */}
+      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+        Jenis metode pembayaran
+      </Typography>
 
       {/* Tabs metric */}
       <Box

@@ -291,7 +291,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <AppShell title="Laporan Lalu Lintas Per Hari">
+    <AppShell title="Laporan Lalu Lintas">
       {/* Filter bar */}
       <Box
         sx={{
@@ -355,6 +355,11 @@ export default function ReportsPage() {
           {error}
         </Typography>
       )}
+
+      {/* Payment method label */}
+      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+        Jenis metode pembayaran
+      </Typography>
 
       {/* Tabs metric */}
       <Box
