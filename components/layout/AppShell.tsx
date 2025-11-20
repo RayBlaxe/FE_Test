@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   Box,
   Drawer,
-  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
@@ -13,15 +13,15 @@ import {
   Toolbar,
   Typography,
   AppBar,
+  Avatar,
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PersonIcon from '@mui/icons-material/Person';
-import TuneIcon from '@mui/icons-material/Tune';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-const drawerWidth = 220;
+const drawerWidth = 260;
 
 type AppShellProps = {
   title?: string;
@@ -30,12 +30,18 @@ type AppShellProps = {
 
 export function AppShell({ title, children }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (href: string) => pathname === href;
 
-  return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f3f5f7' }}>
+  function handleLogout() {
+    localStorage.removeItem('token');
+    router.replace('/login');
+  }
 
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafb' }}>
+      {/* Sidebar */}
       <Drawer
         variant="permanent"
         sx={{
@@ -44,135 +50,213 @@ export function AppShell({ title, children }: AppShellProps) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            bgcolor: '#d0d4db',
-            borderRight: 'none',
+            bgcolor: '#fefefe',
+            borderRight: '1px solid #e2e8f0',
           },
         }}
       >
-        
+        {/* Logo Section */}
         <Box
           sx={{
-            height: 64,
+            height: 72,
             display: 'flex',
             alignItems: 'center',
-            px: 2,
-            borderBottom: '1px solid #bcc1ca',
+            justifyContent: 'center',
+            px: 3,
+            borderBottom: '1px solid #e2e8f0',
           }}
         >
-          <Box
-            sx={{
-              height: 36,
-              flex: 1,
-              borderRadius: 1,
-              border: '1px solid #bcc1ca',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#e4e7ec',
-            }}
-          >
-            <Typography variant="subtitle2">App Logo</Typography>
-          </Box>
-          <IconButton size="small" sx={{ ml: 1 }}>
-            <ExpandMoreIcon />
-          </IconButton>
+          <Image
+            src="/jasamarga-logo.png"
+            alt="Jasa Marga Logo"
+            width={180}
+            height={48}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
         </Box>
 
-
-        <List sx={{ mt: 1 }}>
+        {/* Navigation */}
+        <List sx={{ mt: 2, px: 2 }}>
           <ListItemButton
             component={Link}
             href="/dashboard"
             selected={isActive('/dashboard')}
+            sx={{
+              borderRadius: 2,
+              mb: 0.5,
+              '&.Mui-selected': {
+                bgcolor: '#2596be',
+                color: '#fff',
+                '&:hover': {
+                  bgcolor: '#1e7a9e',
+                },
+                '& .MuiListItemIcon-root': {
+                  color: '#fff',
+                },
+              },
+              '&:hover': {
+                bgcolor: '#f1f5f9',
+              },
+            }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: 40 }}>
               <DashboardIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Dashboard" />
+            <ListItemText 
+              primary="Dashboard" 
+              primaryTypographyProps={{ 
+                fontSize: '0.9rem',
+                fontWeight: isActive('/dashboard') ? 600 : 400 
+              }} 
+            />
           </ListItemButton>
 
-          
-          <ListItemButton>
-            <ListItemIcon>
-              <TableChartIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Laporan Lalin" />
-          </ListItemButton>
-
-          
           <ListItemButton
-            sx={{ pl: 7 }}
             component={Link}
             href="/reports"
             selected={isActive('/reports')}
+            sx={{
+              borderRadius: 2,
+              mb: 0.5,
+              '&.Mui-selected': {
+                bgcolor: '#2596be',
+                color: '#fff',
+                '&:hover': {
+                  bgcolor: '#1e7a9e',
+                },
+                '& .MuiListItemIcon-root': {
+                  color: '#fff',
+                },
+              },
+              '&:hover': {
+                bgcolor: '#f1f5f9',
+              },
+            }}
           >
-            <ListItemText primary="Laporan Per Hari" />
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <AssessmentIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Laporan Lalin" 
+              primaryTypographyProps={{ 
+                fontSize: '0.9rem',
+                fontWeight: isActive('/reports') ? 600 : 400 
+              }} 
+            />
           </ListItemButton>
 
           <ListItemButton
             component={Link}
             href="/master-gate"
             selected={isActive('/master-gate')}
+            sx={{
+              borderRadius: 2,
+              mb: 0.5,
+              '&.Mui-selected': {
+                bgcolor: '#2596be',
+                color: '#fff',
+                '&:hover': {
+                  bgcolor: '#1e7a9e',
+                },
+                '& .MuiListItemIcon-root': {
+                  color: '#fff',
+                },
+              },
+              '&:hover': {
+                bgcolor: '#f1f5f9',
+              },
+            }}
           >
-            <ListItemIcon>
-              <SettingsIcon fontSize="small" />
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <AccountTreeIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Master Gerbang" />
+            <ListItemText 
+              primary="Master Gerbang" 
+              primaryTypographyProps={{ 
+                fontSize: '0.9rem',
+                fontWeight: isActive('/master-gate') ? 600 : 400 
+              }} 
+            />
           </ListItemButton>
+
+          <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid #e2e8f0' }}>
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                borderRadius: 2,
+                color: '#ef4444',
+                '&:hover': {
+                  bgcolor: '#fee2e2',
+                },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: '#ef4444' }}>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Logout" 
+                primaryTypographyProps={{ fontSize: '0.9rem' }} 
+              />
+            </ListItemButton>
+          </Box>
         </List>
       </Drawer>
 
-      
+      {/* Main Content */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        
+        {/* Top Bar */}
         <AppBar
           position="static"
           elevation={0}
-          sx={{ bgcolor: '#c4c8d0', color: '#000' }}
+          sx={{ 
+            bgcolor: '#fefefe', 
+            borderBottom: '1px solid #e2e8f0',
+          }}
         >
           <Toolbar
             sx={{
-              minHeight: 56,
+              minHeight: 72,
               display: 'flex',
-              justifyContent: 'flex-end',
-              gap: 1,
+              justifyContent: 'space-between',
+              px: 3,
             }}
           >
-            <IconButton>
-              <PersonIcon />
-            </IconButton>
-            <IconButton>
-              <TuneIcon />
-            </IconButton>
+            <Typography variant="h6" sx={{ color: '#0f172a', fontWeight: 600 }}>
+              {title || 'Traffic Management System'}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar 
+                sx={{ 
+                  width: 36, 
+                  height: 36, 
+                  bgcolor: '#2596be',
+                  fontSize: '0.9rem'
+                }}
+              >
+                <PersonIcon fontSize="small" />
+              </Avatar>
+            </Box>
           </Toolbar>
         </AppBar>
 
-
+        {/* Page Content */}
         <Box
           component="main"
           sx={{
             flex: 1,
             p: 3,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
           }}
         >
           <Box
             sx={{
-              width: '100%',
-              maxWidth: '1200px',
-              bgcolor: '#fff',
-              borderRadius: 1,
-              boxShadow: '0 0 6px rgba(15, 23, 42, 0.08)',
+              bgcolor: '#fefefe',
+              borderRadius: 3,
+              boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
               p: 3,
+              minHeight: 'calc(100vh - 120px)',
             }}
           >
-            {title && (
-              <Typography variant="h6" fontWeight="bold" mb={2}>
-                {title}
-              </Typography>
-            )}
             {children}
           </Box>
         </Box>

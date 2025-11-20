@@ -99,9 +99,9 @@ export default function DashboardPage() {
       const res = await apiFetch(`/lalins?tanggal=${encodeURIComponent(tanggal)}`);
       const items: Lalin[] = res?.data?.rows?.rows || [];
       setLalins(items);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err?.message || 'Gagal memuat data lalin');
+      setError((err as Error)?.message || 'Gagal memuat data lalin');
     } finally {
       setLoading(false);
     }
@@ -133,16 +133,20 @@ export default function DashboardPage() {
     return map;
   }, [gerbangs]);
 
-  function getGerbangLabel(row: Lalin) {
-    const key = `${row.IdCabang}-${row.IdGerbang}`;
-    const n = gerbangNameMap.get(key);
-    return n ? n : `Gerbang ${row.IdGerbang}`;
-  }
+  const getGerbangLabel = useMemo(() => {
+    return (row: Lalin) => {
+      const key = `${row.IdCabang}-${row.IdGerbang}`;
+      const n = gerbangNameMap.get(key);
+      return n ? n : `Gerbang ${row.IdGerbang}`;
+    };
+  }, [gerbangNameMap]);
 
-  function getCabangLabel(idCabang: number) {
-    const n = cabangNameMap.get(idCabang);
-    return n ? n : `Ruas ${idCabang}`;
-  }
+  const getCabangLabel = useMemo(() => {
+    return (idCabang: number) => {
+      const n = cabangNameMap.get(idCabang);
+      return n ? n : `Ruas ${idCabang}`;
+    };
+  }, [cabangNameMap]);
 
 
   const filteredLalins = useMemo(() => {
@@ -163,7 +167,7 @@ export default function DashboardPage() {
       });
     }
     return rows;
-  }, [lalins, search, gerbangNameMap, cabangNameMap]);
+  }, [lalins, search, getGerbangLabel, getCabangLabel]);
 
   
   const paymentChartData = useMemo(() => {
@@ -208,7 +212,7 @@ export default function DashboardPage() {
       gerbang: name,
       value,
     }));
-  }, [filteredLalins, gerbangNameMap]);
+  }, [filteredLalins, getGerbangLabel]);
 
 
   const shiftPieData = useMemo(() => {
@@ -232,7 +236,7 @@ export default function DashboardPage() {
       name: getCabangLabel(idCabang),
       value,
     }));
-  }, [filteredLalins, cabangNameMap]);
+  }, [filteredLalins, getCabangLabel]);
 
   return (
     <AppShell title="Dashboard">

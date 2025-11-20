@@ -47,7 +47,7 @@ export default function MasterGatePage() {
     // sesuai response: res.data.rows.rows
     const items: Gerbang[] = res?.data?.rows?.rows || [];
     setData(items);
-  } catch (err: any) {
+  } catch (err) {
     console.error(err);
     setError("Gagal memuat data gerbang");
   } finally {
@@ -117,9 +117,9 @@ useEffect(() => {
 
       await fetchGerbangs();
       setOpenForm(false);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err?.message || "Gagal menyimpan data");
+      setError((err as Error)?.message || "Gagal menyimpan data");
     }
   }
 
@@ -135,7 +135,7 @@ useEffect(() => {
       });
 
       await fetchGerbangs();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       alert("Gagal menghapus data");
     }

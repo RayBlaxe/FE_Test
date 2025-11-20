@@ -118,7 +118,7 @@ function toCsv(data: Lalin[]): string {
         const val =
           k === 'Tanggal'
             ? formatDate(row.Tanggal)
-            : (row as any)[k] ?? '';
+            : row[k as keyof Lalin] ?? '';
         const s = String(val).replace(/"/g, '""');
         return `"${s}"`;
       })
@@ -157,9 +157,9 @@ export default function ReportsPage() {
       
       const items: Lalin[] = res?.data?.rows?.rows || [];
       setData(items);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err?.message || 'Gagal memuat data lalin');
+      setError((err as Error)?.message || 'Gagal memuat data lalin');
     } finally {
       setLoading(false);
     }
@@ -315,3 +315,149 @@ export default function ReportsPage() {
           borderRadius: 1,
           overflow: 'hidden',
           mb: 2,
+          border: '1px solid #e0e0e0',
+        }}
+      >
+        {TAB_LABELS.map((t) => {
+          const active = tab === t.key;
+          return (
+            <Button
+              key={t.key}
+              variant={active ? 'contained' : 'text'}
+              onClick={() => setTab(t.key)}
+              sx={{
+                borderRadius: 0,
+                flex: 1,
+                minWidth: 120,
+                bgcolor: active ? 'primary.main' : '#fff',
+                color: active ? '#fff' : 'text.primary',
+                '&:hover': {
+                  bgcolor: active ? 'primary.dark' : '#f5f5f5',
+                },
+              }}
+            >
+              {t.label}
+            </Button>
+          );
+        })}
+      </Box>
+
+      {/* Summary */}
+      <Box sx={{ mb: 3, p: 2, bgcolor: '#f8fafc', borderRadius: 1 }}>
+        <Typography variant="subtitle2" gutterBottom>
+          Summary ({TAB_LABELS.find((t) => t.key === tab)?.label})
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {summaryPerRuas.map(([ruasId, val]) => (
+            <Box key={ruasId}>
+              <Typography variant="caption" color="text.secondary">
+                Ruas {ruasId}
+              </Typography>
+              <Typography variant="h6">{val.toLocaleString('id-ID')}</Typography>
+            </Box>
+          ))}
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Grand Total
+            </Typography>
+            <Typography variant="h6" color="primary">
+              {grandTotal.toLocaleString('id-ID')}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Table */}
+      <Box sx={{ overflowX: 'auto', mb: 2 }}>
+        <Table size="small">
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#f3f5f7' }}>
+              <TableCell>No</TableCell>
+              <TableCell>Ruas</TableCell>
+              <TableCell>Gerbang</TableCell>
+              <TableCell>Gardu</TableCell>
+              <TableCell>Shift</TableCell>
+              <TableCell>Gol</TableCell>
+              <TableCell align="right">Tunai</TableCell>
+              <TableCell align="right">E-Toll</TableCell>
+              <TableCell align="right">Flo</TableCell>
+              <TableCell align="right">KTP</TableCell>
+              <TableCell align="right">Total</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {paginated.map((row, i) => (
+              <TableRow key={row.id} hover>
+                <TableCell>{(currentPage - 1) * rowsPerPage + i + 1}</TableCell>
+                <TableCell>{row.IdCabang}</TableCell>
+                <TableCell>{row.IdGerbang}</TableCell>
+                <TableCell>{row.IdGardu}</TableCell>
+                <TableCell>{row.Shift}</TableCell>
+                <TableCell>{row.Golongan}</TableCell>
+                <TableCell align="right">{row.Tunai}</TableCell>
+                <TableCell align="right">{etoll(row)}</TableCell>
+                <TableCell align="right">{row.eFlo}</TableCell>
+                <TableCell align="right">{ktp(row)}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                  {totalAll(row)}
+                </TableCell>
+              </TableRow>
+            ))}
+            {!paginated.length && (
+              <TableRow>
+                <TableCell colSpan={11} align="center" sx={{ py: 3 }}>
+                  Tidak ada data.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+
+      {/* Pagination */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mt: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">Rows per page:</Typography>
+          <Select
+            size="small"
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setPage(1);
+            }}
+            sx={{ height: 32 }}
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={25}>25</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+          </Select>
+          <Typography variant="body2" sx={{ ml: 2 }}>
+            Page {currentPage} of {totalPages}
+          </Typography>
+        </Box>
+        <Box>
+          <Button
+            disabled={currentPage <= 1}
+            onClick={() => changePage(currentPage - 1)}
+          >
+            Prev
+          </Button>
+          <Button
+            disabled={currentPage >= totalPages}
+            onClick={() => changePage(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </Box>
+      </Box>
+    </AppShell>
+  );
+}
