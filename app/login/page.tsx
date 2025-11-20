@@ -1,4 +1,3 @@
-// app/login/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -15,8 +14,8 @@ import { apiFetch } from '@/lib/http';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('Super Admin');
-  const [password, setPassword] = useState('password12345');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -30,6 +29,27 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
+      // Check if login failed
+      if (data?.status === false) {
+        // Handle validation errors (422)
+        if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          const errorMessages = data.errors
+            .map((err: Record<string, string>) => {
+              const values = Object.values(err);
+              return values.length > 0 ? values[0] : '';
+            })
+            .filter(Boolean)
+            .join(', ');
+          
+          if (errorMessages) {
+            throw new Error(errorMessages);
+          }
+        }
+        
+        // Fall back to message
+        throw new Error(data?.message || 'Login gagal');
+      }
+
       const token = data?.token;
       if (!token) {
         throw new Error('Token tidak ditemukan di response.');
@@ -38,7 +58,15 @@ export default function LoginPage() {
       localStorage.setItem('token', token);
       router.replace('/dashboard');
     } catch (err) {
-      setError((err as Error)?.message || 'Login gagal');
+      // Ensure we display a clean error message
+      const errorMessage = (err as Error)?.message || 'Login gagal';
+      
+      // Check if error message looks like JSON (shouldn't happen, but just in case)
+      if (errorMessage.startsWith('{') || errorMessage.startsWith('[')) {
+        setError('Login gagal. Silakan periksa username dan password Anda.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -50,9 +78,6 @@ export default function LoginPage() {
         minHeight: '100vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: 'url(/gedungjm.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
         position: 'relative',
         '&::before': {
           content: '""',
@@ -61,7 +86,9 @@ export default function LoginPage() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backgroundImage: 'url(/gedungjm.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           filter: 'grayscale(100%)',
           zIndex: 0,
         },
@@ -72,7 +99,7 @@ export default function LoginPage() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
           zIndex: 1,
         }
       }}
@@ -86,8 +113,7 @@ export default function LoginPage() {
           overflow: 'hidden',
           boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
         }}>
-          {/* Left Side - Login Form */}
-          <Box
+                  <Box
             sx={{
               p: { xs: 4, md: 6 },
               display: 'flex',
@@ -124,6 +150,7 @@ export default function LoginPage() {
                 <TextField
                   fullWidth
                   size="medium"
+                  placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   sx={{
@@ -149,6 +176,7 @@ export default function LoginPage() {
                   fullWidth
                   type="password"
                   size="medium"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   sx={{
@@ -202,17 +230,15 @@ export default function LoginPage() {
             </Box>
           </Box>
 
-          {/* Right Side - Illustration */}
+          {/* Illustration */}
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
-              backgroundImage: 'url(/tol1.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
               p: 4,
+              overflow: 'hidden',
               '&::before': {
                 content: '""',
                 position: 'absolute',
@@ -220,7 +246,9 @@ export default function LoginPage() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(29, 58, 141, 0.85)',
+                backgroundImage: 'url(/tol1.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
                 filter: 'grayscale(100%)',
                 zIndex: 0,
               },
@@ -231,8 +259,7 @@ export default function LoginPage() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(29, 58, 141, 0.7)',
-                mixBlendMode: 'multiply',
+                backgroundColor: 'rgba(17, 35, 85, 0.8)',
                 zIndex: 1,
               }
             }}

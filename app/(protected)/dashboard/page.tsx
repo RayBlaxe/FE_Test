@@ -56,7 +56,7 @@ function formatDateShort(iso: string) {
   return `${day}/${month}`;
 }
 
-// ===== Warna untuk grafik =====
+
 const COLORS = ['#1d3a8d', '#ffcc03', '#2596be', '#22c55e', '#a855f7', '#f97316', '#0ea5e9'];
 
 export default function DashboardPage() {
@@ -67,7 +67,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // ambil gerbang sekali di awal
+  
   useEffect(() => {
     (async () => {
       try {
@@ -80,12 +80,12 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  // default tanggal hari ini
+  
   useEffect(() => {
     setTanggal('2023-11-01');
   }, []);
 
-  // Auto-fetch data when date is set
+  // Auto-fetch 
   const handleFilter = useCallback(async () => {
     if (!tanggal) {
       setError('Tanggal harus diisi.');
@@ -117,7 +117,7 @@ export default function DashboardPage() {
     setError('');
   }
 
-  // ====== Mapping bantu untuk nama gerbang & ruas ======
+  // Mapping 
   const gerbangNameMap = useMemo(() => {
     const map = new Map<string, string>(); 
     for (const g of gerbangs) {
@@ -327,7 +327,7 @@ export default function DashboardPage() {
         </Box>
       </Box>
 
-      {/* Grafik 2: Bar per gerbang */}
+      {/* Grafik 2 */}
       <Box mb={4}>
         <Typography variant="subtitle1" mb={1}>
           Jumlah Lalin per Gerbang ({tanggal && formatDateShort(tanggal)})
@@ -349,7 +349,7 @@ export default function DashboardPage() {
         </Box>
       </Box>
 
-      {/* Grafik 3 & 4: Pie Shift dan Pie Chart Ruas */}
+      {/* Grafik 3 & 4 */}
       <Box
         sx={{
           display: 'grid',

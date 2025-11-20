@@ -44,7 +44,7 @@ export default function MasterGatePage() {
     setLoading(true);
     const res = await apiFetch("/gerbangs");
 
-    // sesuai response: res.data.rows.rows
+    
     const items: Gerbang[] = res?.data?.rows?.rows || [];
     setData(items);
   } catch (err) {

@@ -1,5 +1,3 @@
-// types/lalin.ts
-
 export interface Lalin {
   id: number;
   IdCabang: number;

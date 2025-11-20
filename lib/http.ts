@@ -1,4 +1,3 @@
-// lib/http.ts
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
 
 export function getToken() {
@@ -18,16 +17,23 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     },
   });
 
-  if (!res.ok) {
-    // Bisa dibuat handling lebih manis nanti
-    const text = await res.text();
-    throw new Error(text || `Request failed: ${res.status}`);
-  }
-
-  // Kalau API kadang return non-JSON, tinggal sesuaikan
+  // Always try to parse JSON response, even for errors
+  let data;
   try {
-    return await res.json();
+    data = await res.json();
   } catch {
+    // If JSON parsing fails, return text
+    const text = await res.text();
+    if (!res.ok) {
+      throw new Error(text || `Request failed: ${res.status}`);
+    }
     return null;
   }
+
+  // If response is not ok but we have JSON data, return it (for error handling in component)
+  if (!res.ok) {
+    return data;
+  }
+
+  return data;
 }
